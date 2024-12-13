@@ -1,23 +1,10 @@
-
-FROM python:3.12
-
-
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-
-COPY . /app
-
+FROM node:18-alpine
 
 WORKDIR /app
 
+COPY package.json package-lock.json ./
+RUN npm install
 
-RUN python -m venv .venv
+COPY . .
 
-
-RUN ./.venv/bin/pip install --upgrade pip && uv sync --frozen --no-cache
-
-
-ENV PATH="/app/.venv/bin:$PATH"
-
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN npm run build
